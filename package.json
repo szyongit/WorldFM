@@ -1,0 +1,28 @@
+{
+  "name": "rythma",
+  "version": "1.0.0",
+  "description": "A Discord music bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Szyon",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.16.0",
+    "audd.io": "^3.0.2",
+    "discord.js": "^14.11.0",
+    "fast-average-color-node": "^2.6.0",
+    "jsdom": "^22.1.0",
+    "libsodium-wrappers": "^0.7.13",
+    "mongoose": "^7.1.1",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.4",
+    "@types/node": "^20.1.4",
+    "@types/node-fetch": "^2.6.7",
+    "dotenv": "^16.0.3"
+  }
+}
