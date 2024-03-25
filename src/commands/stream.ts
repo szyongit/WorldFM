@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Client, GuildMember, Message, SlashCommandBuilder, VoiceChannel } from 'discord.js';
+import * as prism from 'prism-media';
 
 import ReplyEmbed from '../components/replyembed';
 import DatabaseHandler from '../handler/databasehandler';
@@ -15,7 +16,7 @@ const command = new SlashCommandBuilder()
     .setDescription("Specify an id of a station to stream from!")
     .setRequired(false)
     return option;
-});
+})
 
 const buttonActionRow = new ActionRowBuilder<ButtonBuilder>();
 const cancelButton = new ButtonBuilder();
@@ -67,7 +68,6 @@ async function execute(client:Client, interaction: ChatInputCommandInteraction) 
             flag_string:Data.translateFlagCode(doc.iso_string),
             iso_string:doc.iso_string,
             region_name:Data.translateRegion(region.region_name),
-            region_image:region.region_image,
             station_audio_url:station.audio_url,
             station_image_url:station.image_url,
             station_name:station.station_name,
@@ -250,7 +250,6 @@ async function execute(client:Client, interaction: ChatInputCommandInteraction) 
         iso_string:country.iso_string,
         flag_string:Data.translateFlagCode(country.iso_string),
         region_name:Data.translateRegion(region.region_name),
-        region_image:region.region_image,
         station_name:station.station_name,
         station_id:countryId+regionId+stationId,
         station_audio_url:station.audio_url,

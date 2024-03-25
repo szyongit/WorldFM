@@ -9,7 +9,7 @@ const command = new SlashCommandBuilder()
 async function execute(client: Client, interaction: ChatInputCommandInteraction) {
     const actionRowBuilder = new ActionRowBuilder<ButtonBuilder>();
     actionRowBuilder.addComponents(new ButtonBuilder({ label: `${client.user?.username || "WorldFM"} on GitHub`, style: ButtonStyle.Link, url: 'https://github.com/szyongit/WorldFM' }))
-    interaction.reply({ embeds: [ReplyEmbed.build({title:`About ${client.user?.username || "WorldFM"}`, message:'powered by worldradiomap.com & api.teleport.org\nCopyright © Szyon 2023', thumbnailURL:client.user?.avatarURL({size:128})})] , components:[actionRowBuilder], ephemeral:true});
+    interaction.reply({ embeds: [ReplyEmbed.build({title:`About ${client.user?.username || "WorldFM"}`, message:`powered by worldradiomap.com\nCopyright © Szyon ${new Date().getUTCFullYear()}`, thumbnailURL:client.user?.avatarURL({size:128})})] , components:[actionRowBuilder], ephemeral:true});
 }
 
 export default {

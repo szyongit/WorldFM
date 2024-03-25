@@ -76,7 +76,7 @@ async function update(client:Client, guildId:string, nowPlaying?:NowPlayingData,
     let description = nowPlaying.flag_string + " " + (nowPlaying.country_name || "").toUpperCase() + ", " + Data.translateRegion((nowPlaying.region_name || "")).toUpperCase();
     description += "\n\n"
     if(doc.volume) {
-        description += "Volume: " + ProgressBar.getString(doc.volume * 100) + " " + (doc.volume * 100) + "%";
+        description += "Volume: " + ProgressBar.getString(Math.floor((doc.volume * 100))) + " " + Math.floor((doc.volume * 100)) + "%";
     }
 
     const embed = new EmbedBuilder();
@@ -85,7 +85,6 @@ async function update(client:Client, guildId:string, nowPlaying?:NowPlayingData,
     embed.setThumbnail((nowPlaying.station_image_url || "").replaceAll(".svg", ".gif").replace("..", ""))
     embed.setFooter({text:("ID: " + nowPlaying.station_id)});
     embed.setColor(controlsState === "playing" ? "Green" : "DarkerGrey");
-    embed.setImage(nowPlaying.region_image || null);
 
     nowPlayingMap.set(guildId, nowPlaying);
 

@@ -7,8 +7,13 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const commandDir = path_1.default.dirname(__dirname) + path_1.default.sep + "commands" + path_1.default.sep;
 const commandMap = new Map();
+let updateDBCommand = undefined;
 fs_1.default.readdirSync(commandDir).filter((element => element.endsWith('.js'))).forEach(file => {
     const Command = require(commandDir + file.toString());
+    if (Command.default.command.name === "updatedb") {
+        updateDBCommand = Command.default;
+        return;
+    }
     commandMap.set(Command.default.command.name, Command.default);
 });
 const jsonFormat = [];
@@ -16,6 +21,15 @@ commandMap.forEach((value) => jsonFormat.push(value.command.toJSON()));
 async function handle(client, interaction) {
     if (!interaction.isChatInputCommand())
         return;
+    if (interaction.commandName === "updatedb") {
+        const execute = updateDBCommand.execute;
+        if (!execute) {
+            console.log(`\x1b[31mCould not execute command for ${interaction.commandName}!\x1b[0m\n`);
+            return;
+        }
+        execute(client, interaction);
+        return;
+    }
     const execute = commandMap.get(interaction.commandName)?.execute;
     if (!execute) {
         console.log(`\x1b[31mCould not execute command for ${interaction.commandName}!\x1b[0m\n`);
@@ -25,5 +39,6 @@ async function handle(client, interaction) {
 }
 exports.default = {
     handle: handle,
-    jsonFormat: jsonFormat
+    jsonFormat: jsonFormat,
+    updateDBCommand: updateDBCommand
 };

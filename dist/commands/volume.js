@@ -23,7 +23,7 @@ async function execute(client, interaction) {
             .then(message => setTimeout(() => message.delete().catch(() => { }), 3000));
         return;
     }
-    const volume = interaction.options.getNumber("percentage", true);
+    const volume = Math.floor(interaction.options.getNumber("percentage", true));
     if (volume < 0 || volume > 500) {
         interaction.reply({ embeds: [replyembed_1.default.build({ title: "Please enter a valid input", message: "The volume can only be between 0 and 500!", isError: true })] })
             .then(message => setTimeout(() => message.delete().catch(() => { }), 3000));

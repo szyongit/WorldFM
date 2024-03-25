@@ -1,10 +1,9 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Client, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from 'discord.js';
 
 import ReplyEmbed from '../components/replyembed';
 import DatabaseHandler from '../handler/databasehandler';
 import FetchHandler from '../handler/fetchhandler';
 import ProgressBar from '../components/progressbar';
-import fetchhandler from '../handler/fetchhandler';
 
 const command = new SlashCommandBuilder()
 .setName('updatedb')

@@ -11,7 +11,7 @@ const command = new discord_js_1.SlashCommandBuilder()
 async function execute(client, interaction) {
     const actionRowBuilder = new discord_js_1.ActionRowBuilder();
     actionRowBuilder.addComponents(new discord_js_1.ButtonBuilder({ label: `${client.user?.username || "WorldFM"} on GitHub`, style: discord_js_1.ButtonStyle.Link, url: 'https://github.com/szyongit/WorldFM' }));
-    interaction.reply({ embeds: [replyembed_1.default.build({ title: `About ${client.user?.username || "WorldFM"}`, message: 'powered by worldradiomap.com & api.teleport.org\nCopyright © Szyon 2023', thumbnailURL: client.user?.avatarURL({ size: 128 }) })], components: [actionRowBuilder], ephemeral: true });
+    interaction.reply({ embeds: [replyembed_1.default.build({ title: `About ${client.user?.username || "WorldFM"}`, message: `powered by worldradiomap.com\nCopyright © Szyon ${new Date().getUTCFullYear()}`, thumbnailURL: client.user?.avatarURL({ size: 128 }) })], components: [actionRowBuilder], ephemeral: true });
 }
 exports.default = {
     command: command,

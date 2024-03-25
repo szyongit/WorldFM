@@ -67,7 +67,7 @@ async function update(client, guildId, nowPlaying, controlsState) {
     let description = nowPlaying.flag_string + " " + (nowPlaying.country_name || "").toUpperCase() + ", " + data_1.default.translateRegion((nowPlaying.region_name || "")).toUpperCase();
     description += "\n\n";
     if (doc.volume) {
-        description += "Volume: " + progressbar_1.default.getString(doc.volume * 100) + " " + (doc.volume * 100) + "%";
+        description += "Volume: " + progressbar_1.default.getString(Math.floor((doc.volume * 100))) + " " + Math.floor((doc.volume * 100)) + "%";
     }
     const embed = new discord_js_1.EmbedBuilder();
     embed.setTitle(nowPlaying.station_name || "");
@@ -75,7 +75,6 @@ async function update(client, guildId, nowPlaying, controlsState) {
     embed.setThumbnail((nowPlaying.station_image_url || "").replaceAll(".svg", ".gif").replace("..", ""));
     embed.setFooter({ text: ("ID: " + nowPlaying.station_id) });
     embed.setColor(controlsState === "playing" ? "Green" : "DarkerGrey");
-    embed.setImage(nowPlaying.region_image || null);
     nowPlayingMap.set(guildId, nowPlaying);
     const message = await controlsChannel.messages.fetch(doc.message).catch(() => { });
     if (!message)

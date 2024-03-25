@@ -28,13 +28,7 @@ async function connectToDB(client) {
     const uri = process.env.DATABASE_URI;
     if (!uri)
         return;
-    const connection = await mongoose.connect(uri);
-    connection.connection.on('disconnected', () => {
-        console.log(`\x1b[31mDISCONNECTED FROM DATABASE!\nSHUTTING DOWN...\x1b[0m\n`);
-        client.destroy();
-        process.exit();
-    });
-    return connection;
+    return mongoose.connect(uri);
 }
 function isConnected() {
     return (mongoose.connection != undefined);
@@ -78,9 +72,6 @@ const RegionsSchema = new mongoose.Schema({
     },
     region_id: {
         type: Number
-    },
-    region_image: {
-        type: String
     },
     stations: [Station]
 });

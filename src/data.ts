@@ -5,7 +5,7 @@ import DatabaseHandler from "./handler/databasehandler";
 let lockedChannels:Map<string, boolean> = new Map<string, boolean>();
 
 const streamMap = new Map<string, Map<string, Message>>();
-export type NowPlayingData = {station_name?:string, station_id?:string, station_image_url?:string, station_audio_url?:string, country_name?:string, iso_string?:string, region_name?:string, region_image?:string, flag_string?:string};
+export type NowPlayingData = {station_name?:string, station_id?:string, station_image_url?:string, station_audio_url?:string, country_name?:string, iso_string?:string, region_name?:string, flag_string?:string};
 const nowPlayingMap = new Map<string, NowPlayingData>();
 
 async function update() {

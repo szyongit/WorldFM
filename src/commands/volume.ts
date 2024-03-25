@@ -22,7 +22,7 @@ async function execute(client: Client, interaction: ChatInputCommandInteraction)
         return;
     }
 
-    const volume:number = interaction.options.getNumber("percentage", true);
+    const volume:number = Math.floor(interaction.options.getNumber("percentage", true));
     
     if(volume < 0 || volume > 500) {
         interaction.reply({ embeds: [ReplyEmbed.build({title:"Please enter a valid input", message:"The volume can only be between 0 and 500!", isError:true})]})

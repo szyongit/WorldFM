@@ -63,6 +63,7 @@ function play(guildId:string, resourceString:string):boolean {
     const resource = loadResource(playerData.resourceString);
 
     playerMap.set(guildId, {player:playerData.player, audioResource:resource, resourceString:playerData.resourceString});
+    
     playerData.player.play(resource);
 
     DatabaseHandler.ControlsData.findOne({guild:guildId}).then(async (doc) => {

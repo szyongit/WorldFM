@@ -60,7 +60,6 @@ async function fetchData(countryName, isoCode, isEuropean, skipExisting, progres
             const splitIsoCode = isoCode.split("/");
             const prepIsoCode = splitIsoCode[0];
             const regionName = splitIsoCode[1];
-            const regionImage = await fetchRegionImage(countryName, regionName.toLowerCase());
             if (skipExisting && databaseData.find((element) => element.region_name === regionName)) {
                 await progressCallback(countryId, 100, 0, regionName, undefined, flagColorAverage);
                 countryIds.splice(countryIds.lastIndexOf(countryId), 1);
@@ -76,7 +75,7 @@ async function fetchData(countryName, isoCode, isEuropean, skipExisting, progres
                 countryIds.splice(countryIds.lastIndexOf(countryId), 1);
                 return undefined;
             }
-            result.push({ region_name: regionName, region_id: 1, region_image: regionImage, stations: stationsArray });
+            result.push({ region_name: regionName, region_id: 1, stations: stationsArray });
             await progressCallback(countryId, 100, 0, undefined, undefined, flagColorAverage);
             countryIds.splice(countryIds.lastIndexOf(countryId), 1);
             return result;
@@ -91,7 +90,7 @@ async function fetchData(countryName, isoCode, isEuropean, skipExisting, progres
                 const percentage = (((i + 1) / (regions.length + 1)) * 100).toFixed(2);
                 const estimatedTime = ((totalTime / ((i + 1) - skipped)) * (regions.length - (i + 1 - skipped)));
                 const nextRegion = (i + 1 > regions.length - 1 ? regions.length - 1 : i + 1);
-                result.push({ region_name: databaseData[i].region_name, region_id: databaseData[i].region_id, region_image: databaseData[i].region_image, stations: databaseData[i].stations });
+                result.push({ region_name: databaseData[i].region_name, region_id: databaseData[i].region_id, stations: databaseData[i].stations });
                 await progressCallback(countryId, Number(percentage), Number(estimatedTime), regions[nextRegion].name, result, flagColorAverage);
                 continue;
             }
@@ -106,7 +105,7 @@ async function fetchData(countryName, isoCode, isEuropean, skipExisting, progres
                 await progressCallback(countryId, Number(percentage), Number(estimatedTime), regions[nextRegion].name.replaceAll(":", ", "), result, flagColorAverage);
                 continue;
             }
-            result.push({ region_name: regions[i].name, region_id: i + 1, region_image: regions[i].image, stations: stationsArray });
+            result.push({ region_name: regions[i].name, region_id: i + 1, stations: stationsArray });
             totalTime += (end - start) / 1000;
             const percentage = (((i + 1) / (regions.length + 1)) * 100).toFixed(2);
             const estimatedTime = ((totalTime / ((i + 1) - skipped)) * (regions.length - (i + 1 - skipped)));
@@ -141,8 +140,7 @@ async function fetchEuropeanRegions(countryName, isoCode) {
                 regionURL = splitRegionURL[2];
             }
             const name = regionURL.split(".")[0];
-            const image = await fetchRegionImage(countryName, name.toLowerCase());
-            stationLocations.push({ name: name, image: image, url: regionURL });
+            stationLocations.push({ name: name, url: regionURL });
         }
         return stationLocations;
     }
@@ -163,21 +161,18 @@ async function fetchWorldRegions(countryName, isoCode) {
             let regionURL = href.substring(href.indexOf("/"));
             //stateName = querySelect("span");
             let name = "?";
-            let image = undefined;
             if ((regionURL.match(/\//g) || [])?.length >= 2) {
                 const stateCode = regionURL.split("/")[1];
                 if (!stateCode.startsWith("us"))
                     continue;
                 const city = regionURL.split("/")[2].split(".")[0];
-                image = await fetchRegionImage(countryName, city.toLowerCase());
                 name = stateCode.split("-")[1];
                 name += (":" + city);
             }
             else {
                 name = regionURL.split(".")[0];
-                image = await fetchRegionImage(countryName, name.toLowerCase());
             }
-            stationLocations.push({ name: name, image: image, url: regionURL });
+            stationLocations.push({ name: name, url: regionURL });
         }
         return stationLocations;
     }
@@ -226,9 +221,12 @@ async function fetchAudioLink(audioPlayerLink) {
         const dom = new jsdom_1.JSDOM(dataText, { virtualConsole });
         const result = dom.window.document.querySelector("audio")?.src;
         if (!result)
-            return undefined;
+            return;
+        //test if audioconnection exists
+        await (0, node_fetch_1.default)(result, { timeout: 5000 });
         const audioStream = (0, voice_1.createAudioResource)(result).playStream;
         const probe = await (0, voice_1.demuxProbe)(new stream_1.Readable().wrap(audioStream), 1);
+        //test if audioconnection exists end
         audioStream.destroy();
         if (probe.stream.readableLength <= 0) {
             probe.stream.destroy();
@@ -236,32 +234,6 @@ async function fetchAudioLink(audioPlayerLink) {
         }
         probe.stream.destroy();
         return result;
-    }
-    catch {
-        return undefined;
-    }
-}
-async function fetchRegionImage(countryName, regionName) {
-    try {
-        const searchedRegion = await (0, node_fetch_1.default)("https://api.teleport.org/api/cities/?search=" + regionName, { timeout: 3000 });
-        const searchedRegionData = await searchedRegion.json();
-        if (!searchedRegionData)
-            return undefined;
-        const data = searchedRegionData._embedded['city:search-results'].find((element) => {
-            const split = element.matching_full_name.split(",");
-            const apiCountryName = split[split.length - 1].trim();
-            return apiCountryName.toLowerCase() === countryName.toLowerCase();
-        });
-        const geoNameURL = data._links['city:item'].href;
-        const geoName = await (0, node_fetch_1.default)(geoNameURL, { timeout: 3000 });
-        const geoNameData = await geoName.json();
-        const urbanAreas = geoNameData._links['city:urban_area'];
-        if (!urbanAreas)
-            return undefined;
-        const images = urbanAreas.href + "images";
-        const fetchedImages = await (0, node_fetch_1.default)(images, { timeout: 3000 });
-        const imagesData = await fetchedImages.json();
-        return imagesData.photos[0].image.mobile; //alt: instead of .mobile you can to .web
     }
     catch {
         return undefined;
