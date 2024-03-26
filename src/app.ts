@@ -44,14 +44,7 @@ const client = new Client({
 async function main() {
     console.log("Connecting to database...");
     await DatabaseHandler.connectToDB(client)
-    .then((mong) => {
-        console.log("Connected to database!")
-        mong?.connection.on('disconnected', () => {
-            console.log(`\x1b[31mDISCONNECTED FROM DATABASE!\nSHUTTING DOWN...\x1b[0m\n`);
-            client.destroy();
-            process.exit();
-        });
-    })  
+    .then(() => console.log("Connected to database!"))  
     .catch(() => {
         console.log("Could not connect to database on " + process.env.DATABASE_URI + "!");
         process.exit();
