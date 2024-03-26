@@ -276,17 +276,27 @@ async function displayCountries(interaction, countries) {
     return interaction.fetchReply();
 }
 async function displayRegions(interaction, regions, countryName, iso_string) {
-    let message = data_1.default.translateFlagCode(iso_string) + " " + (countryName ? countryName.toUpperCase() : "undefined") + "\n\n";
+    let baseMessage = data_1.default.translateFlagCode(iso_string) + " " + (countryName ? countryName.toUpperCase() : "undefined") + "\n\n";
+    let messages = [];
+    let messageIndex = 0;
+    messages[messageIndex] = baseMessage;
     for (let i = 0; i < regions.length; i++) {
-        message += (i + 1) + ") " + data_1.default.translateRegion(regions[i].region_name.toUpperCase()) + "\n";
+        let messageString = (i + 1) + ") " + data_1.default.translateRegion(regions[i].region_name.toUpperCase()) + "\n";
+        if (messages[messageIndex].concat(messageString).length > 4096) {
+            messageIndex++;
+        }
+        messages[messageIndex] = (messages[messageIndex] || "") + messageString;
     }
-    const embed = replyembed_1.default.build({ title: "Enter the number of the region you want to stream from:", message: message });
+    let jsonEmbeds = [];
+    for (let j = 0; j < messages.length; j++) {
+        jsonEmbeds[j] = replyembed_1.default.build({ title: (j === 0 ? "Enter the number of the region you want to stream from:" : undefined), message: messages[j] }).toJSON();
+    }
     try {
         if (interaction.replied) {
-            await interaction.editReply({ embeds: [embed.toJSON()], components: [buttonActionRow.toJSON()] });
+            await interaction.editReply({ embeds: jsonEmbeds, components: [buttonActionRow.toJSON()] });
         }
         else {
-            await interaction.reply({ embeds: [embed.toJSON()], components: [buttonActionRow.toJSON()] });
+            await interaction.reply({ embeds: jsonEmbeds, components: [buttonActionRow.toJSON()] });
         }
     }
     catch {

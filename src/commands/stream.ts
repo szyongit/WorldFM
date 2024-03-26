@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Client, GuildMember, Message, SlashCommandBuilder, VoiceChannel } from 'discord.js';
+import { APIEmbed, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Client, EmbedBuilder, GuildMember, Message, SlashCommandBuilder, VoiceChannel } from 'discord.js';
 import * as prism from 'prism-media';
 
 import ReplyEmbed from '../components/replyembed';
@@ -319,18 +319,31 @@ async function displayCountries(interaction:ChatInputCommandInteraction, countri
 }
 
 async function displayRegions(interaction:ChatInputCommandInteraction, regions:any[], countryName?:string, iso_string?:string):Promise<boolean> {
-    let message = Data.translateFlagCode(iso_string) + " " + (countryName ? countryName.toUpperCase() : "undefined") + "\n\n";
+    let baseMessage = Data.translateFlagCode(iso_string) + " " + (countryName ? countryName.toUpperCase() : "undefined") + "\n\n";
+
+    let messages: string[] = [];
+    let messageIndex = 0;
+    messages[messageIndex] = baseMessage;
+
     for(let i = 0; i < regions.length; i++) {
-        message += (i + 1) + ") " + Data.translateRegion(regions[i].region_name.toUpperCase()) + "\n"
+        let messageString = (i + 1) + ") " + Data.translateRegion(regions[i].region_name.toUpperCase()) + "\n";
+        if(messages[messageIndex].concat(messageString).length > 4096) {
+            messageIndex ++;
+        }
+
+        messages[messageIndex] = (messages[messageIndex] || "") + messageString;
     }
 
-    const embed = ReplyEmbed.build({title:"Enter the number of the region you want to stream from:", message:message});
+    let jsonEmbeds: APIEmbed[] = [];
+    for(let j = 0; j < messages.length; j++) {
+        jsonEmbeds[j] = ReplyEmbed.build({title:(j===0 ? "Enter the number of the region you want to stream from:" : undefined), message:messages[j]}).toJSON();
+    }
 
     try {
         if(interaction.replied) {
-            await interaction.editReply({embeds:[embed.toJSON()], components:[buttonActionRow.toJSON()]});
+            await interaction.editReply({embeds:jsonEmbeds, components:[buttonActionRow.toJSON()]});
         } else {
-            await interaction.reply({embeds:[embed.toJSON()], components:[buttonActionRow.toJSON()]});
+            await interaction.reply({embeds:jsonEmbeds, components:[buttonActionRow.toJSON()]});
         }
     } catch {
         return false;

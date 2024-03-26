@@ -223,7 +223,7 @@ async function fetchAudioLink(audioPlayerLink) {
         if (!result)
             return;
         //test if audioconnection exists
-        await (0, node_fetch_1.default)(result, { timeout: 5000 });
+        await (0, node_fetch_1.default)(result, { timeout: 5000, size: 100 });
         const audioStream = (0, voice_1.createAudioResource)(result).playStream;
         const probe = await (0, voice_1.demuxProbe)(new stream_1.Readable().wrap(audioStream), 1);
         //test if audioconnection exists end
